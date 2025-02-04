@@ -3,8 +3,9 @@ import authenticate from '../authentificate';
 import { SmsSender } from '../../../tools/sendSms';
 import { checkParameters, clearPhone, getOrCreateContact, phoneNumberCheck } from '../../../tools/tools';
 import { log } from '../../../tools/log';
+import { smsSender } from '../../..';
 
-async function sendSms(req: Request<any>, res: Response<any>, smsSender: SmsSender) {
+async function sendSms(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
 	if (!user) return;
 

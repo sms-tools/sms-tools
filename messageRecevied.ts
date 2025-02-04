@@ -1,18 +1,10 @@
+import { servicesClass, smsSender, SseSuscriber } from '.';
 import { Contact } from './models/contact.model';
 import { Message } from './models/message.model';
-import ServicesClass from './services/service';
 import { log } from './tools/log';
-import { SmsSender } from './tools/sendSms';
 import { bolderize, getUser } from './tools/tools';
 
-async function messageRecevied(
-	message: string,
-	contact: InstanceType<typeof Contact>,
-	messageId: string,
-	servicesClass: Promise<Array<ServicesClass>>,
-	smsSender: SmsSender,
-	SseSuscriber: Map<string, Array<(message: InstanceType<typeof Message>) => void>>
-) {
+async function messageRecevied(message: string, contact: InstanceType<typeof Contact>, messageId: string) {
 	message = message.trim().toLowerCase();
 	log(`Message received`, 'INFO', __filename, { message, user: contact }, contact?._id.toString());
 
@@ -52,7 +44,7 @@ async function messageRecevied(
 					{ message, user: contact, serv },
 					serv.name
 				);
-				serv.newMessage(user, message, smsSender);
+				serv.newMessage(user, message);
 			}
 		});
 		//if user is in service
@@ -60,7 +52,7 @@ async function messageRecevied(
 			const service = (await servicesClass).find(e => e.name == user.currentServices);
 			if (!service) user.currentServices == 'nothing';
 			else {
-				service.newMessage(user, message, smsSender);
+				service.newMessage(user, message);
 				return;
 			}
 		}
@@ -76,7 +68,7 @@ async function messageRecevied(
 				//if only one argument
 				if (messageSplit.length == 1) {
 					log('user is enter in services', 'INFO', __filename, { user: user, service });
-					service.newMessage(user, messageSplit.slice(1).join(' '), smsSender);
+					service.newMessage(user, messageSplit.slice(1).join(' '));
 				}
 				return;
 			}
@@ -90,7 +82,7 @@ async function messageRecevied(
 				//if only one argument
 				if (messageSplit.length == 1) {
 					log('user is enter in services', 'INFO', __filename, { user: user, serv });
-					serv.newMessage(user, messageSplit.slice(1).join(' '), smsSender);
+					serv.newMessage(user, messageSplit.slice(1).join(' '));
 				}
 				return;
 			}
@@ -109,7 +101,7 @@ async function messageRecevied(
 		(await servicesClass).forEach(async serv => {
 			if (serv.type == 'message') {
 				log(`Message transfered to ${serv.name}`, 'INFO', __filename, { message, user: user, serv }, serv.name);
-				serv.newMessage(user, message, smsSender);
+				serv.newMessage(user, message);
 			}
 		});
 	}

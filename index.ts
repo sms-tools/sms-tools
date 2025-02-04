@@ -18,8 +18,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-//////////////////////////create sse object/////////////////////////////////////////////
-const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
 //////////////////////////data base/////////////////////////////////////////////
 
 // in test, the test script will create the connection to the database
@@ -96,7 +94,7 @@ app.post('/sms', async (req, res) => {
 		return;
 	}
 	//pass to other app
-	messageRecevied(message, contact, req.body.id, servicesClass, smsSender, SseSuscriber);
+	messageRecevied(message, contact, req.body.id);
 });
 
 app.post('/sent', (req, res) => {
@@ -126,9 +124,12 @@ app.post('/failed', (req, res) => {
 	eventfailed(req.body.payload.messageId, new Date(), req.body.payload.reason);
 });
 
-app.get('/getNewMessage', (req, res) => getNewMessage(req, res, SseSuscriber));
+app.get('/getNewMessage', (req, res) => getNewMessage(req, res));
 //app.use(router);
 
 //////////////////////////create class/////////////////////////////////////////////
 const smsSender = new SmsSender();
+const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
 const servicesClass = loadServices(app, SseSuscriber, smsSender);
+
+export { smsSender, SseSuscriber, servicesClass };

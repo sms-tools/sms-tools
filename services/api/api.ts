@@ -1,7 +1,6 @@
-import { User } from '../../models/user.model';
-import { SmsSender } from '../../tools/sendSms';
+import Utils from '../utils/utils';
 
-class apiClass {
+class apiClass extends Utils {
 	name: string;
 	description: string;
 	version: string;
@@ -9,20 +8,13 @@ class apiClass {
 	commands: Array<String>;
 	bypassTrigger: Array<String>;
 	constructor() {
+		super();
 		this.name = 'main services';
 		this.description = 'default class for all services';
 		this.version = '1.0';
 		this.type = 'command';
 		this.commands = [];
 		this.bypassTrigger = [];
-	}
-	newMessage(contact: InstanceType<typeof User>, message: string, smsSender: SmsSender) {
-		smsSender.sendSms(
-			contact,
-			'your message has been received by ' + this.name + ', but the service has no response to give you',
-			undefined,
-			this.name
-		);
 	}
 }
 

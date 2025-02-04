@@ -3,12 +3,9 @@ import { Message } from '../../../models/message.model';
 import { log } from '../../../tools/log';
 import { checkParameters, clearPhone, getContact, phoneNumberCheck } from '../../../tools/tools';
 import authenticate from '../authentificate';
+import { SseSuscriber } from '../../..';
 
-async function getNewMessage(
-	req: Request<any>,
-	res: Response<any>,
-	SseSubscribers: Map<string, Array<(message: InstanceType<typeof Message>) => void>>
-) {
+async function getNewMessage(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
 	if (!user) return;
 
@@ -57,7 +54,7 @@ async function getNewMessage(
 	log('Client connected to SSE', 'INFO', __filename, { contactId }, user.id);
 
 	// aff callback to sse shared object
-	const subscribers = SseSubscribers.get(contactId.toString()) || [];
+	const subscribers = SseSuscriber.get(contactId.toString()) || [];
 	const sendMessage = (message: InstanceType<typeof Message>) => {
 		try {
 			res.write(`${JSON.stringify(message)}`);
@@ -66,16 +63,16 @@ async function getNewMessage(
 		}
 	};
 	subscribers.push(sendMessage);
-	SseSubscribers.set(contactId.toString(), subscribers);
+	SseSuscriber.set(contactId.toString(), subscribers);
 
 	// if client is desconected
 	res.on('close', () => {
 		log('Client disconnected from SSE', 'INFO', __filename, { contactId }, user.id);
-		const updatedSubscribers = SseSubscribers.get(contactId.toString())?.filter(cb => cb !== sendMessage);
+		const updatedSubscribers = SseSuscriber.get(contactId.toString())?.filter(cb => cb !== sendMessage);
 		if (updatedSubscribers?.length) {
-			SseSubscribers.set(contactId.toString(), updatedSubscribers);
+			SseSuscriber.set(contactId.toString(), updatedSubscribers);
 		} else {
-			SseSubscribers.delete(contactId.toString());
+			SseSuscriber.delete(contactId.toString());
 		}
 		res.end();
 	});
