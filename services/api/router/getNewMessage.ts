@@ -24,7 +24,7 @@ async function getNewMessage(req: Request<any>, res: Response<any>) {
 
 	let contactId = req.body.ContactID;
 
-	if (!contactId && req.body.phoneNumber) {
+	if (!contactId && !req.body.phoneNumber) {
 		const phone = clearPhone(req.body.phoneNumber);
 		if (!phoneNumberCheck(phone)) {
 			log('Invalid phone number provided', 'WARNING', __filename, {}, user.id);

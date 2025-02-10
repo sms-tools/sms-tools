@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Message } from '../../../models/message.model';
@@ -25,7 +24,7 @@ async function ContactInfo(req: Request<any>, res: Response<any>) {
 
 	let contactId = req.body.ContactID;
 
-	if (!contactId && req.body.phoneNumber) {
+	if (!contactId && !req.body.phoneNumber) {
 		const phone = clearPhone(req.body.phoneNumber);
 		if (!phoneNumberCheck(phone)) {
 			log('Invalid phone number provided', 'WARNING', __filename, {}, user.id);
@@ -48,12 +47,12 @@ async function ContactInfo(req: Request<any>, res: Response<any>) {
 	const contactStats = await Message.aggregate([
 		{
 			$match: {
-				contactID: new ObjectId(`${contactId}`)
+				contactID: new mongoose.Types.ObjectId(`${contactId}`)
 			}
 		},
 		{
 			$group: {
-				_id: new ObjectId(`${contactId}`),
+				_id: new mongoose.Types.ObjectId(`${contactId}`),
 				nbMessageIn: {
 					$sum: {
 						$cond: [
@@ -82,9 +81,26 @@ async function ContactInfo(req: Request<any>, res: Response<any>) {
 				timeForLastMessage: {
 					$max: '$date'
 				},
-				nbCharExchanged: {
+				nbCharExchangedIn: {
 					$sum: {
-						$strLenCP: '$message'
+						$cond: [
+							{
+								$eq: ['$direction', true]
+							},
+							{ $strLenCP: '$message' },
+							0
+						]
+					}
+				},
+				nbCharExchangedOut: {
+					$sum: {
+						$cond: [
+							{
+								$eq: ['$direction', false]
+							},
+							{ $strLenCP: '$message' },
+							0
+						]
 					}
 				}
 			}

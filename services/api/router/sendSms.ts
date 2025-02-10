@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import authenticate from '../authentificate';
-import { SmsSender } from '../../../tools/sendSms';
-import { checkParameters, clearPhone, getOrCreateContact, phoneNumberCheck } from '../../../tools/tools';
-import { log } from '../../../tools/log';
+import mongoose from 'mongoose';
 import { smsSender } from '../../..';
+import { Contact } from '../../../models/contact.model';
+import { log } from '../../../tools/log';
+import { checkParameters, clearPhone, getOrCreateContact, phoneNumberCheck } from '../../../tools/tools';
+import authenticate from '../authentificate';
 
 async function sendSms(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
@@ -14,7 +15,8 @@ async function sendSms(req: Request<any>, res: Response<any>) {
 			req.body,
 			res,
 			[
-				['phone', 'string'],
+				['ContactID', 'ObjectId', true],
+				['phoneNumber', 'string', true],
 				['message', 'string']
 			],
 			__filename
@@ -23,15 +25,29 @@ async function sendSms(req: Request<any>, res: Response<any>) {
 		return;
 	}
 
-	const phone = clearPhone(req.body.phone);
-	if (!phoneNumberCheck(phone)) {
-		res.status(400).json({ OK: false, message: 'bad phone number format' });
-		log(`Invalid phone number format: ${req.body.phone}`, 'WARNING', __filename, {
-			phone: req.body.phone,
-			ip: req.hostname,
-			user
-		});
-		return;
+	let contact: InstanceType<typeof Contact> | undefined = undefined;
+
+	if (!req.body.contactID && req.body.phoneNumber) {
+		const phone = clearPhone(req.body.phoneNumber);
+		if (!phoneNumberCheck(phone)) {
+			log('Invalid phone number provided', 'WARNING', __filename, {}, user.id);
+			return res.status(400).json({ OK: false, message: 'Invalid phone number' });
+		}
+		contact = await getOrCreateContact(phone);
+
+		if (!contact || !contact._id) {
+			log('Contact not found', 'WARNING', __filename, { phone }, user.id);
+			return res.status(404).json({ OK: false, message: 'Contact not found' });
+		}
+	} else {
+		contact = (await Contact.findOne({ _id: new mongoose.Types.ObjectId(`${req.body.ContactID}`) })) || undefined;
+	}
+
+	if (!contact) {
+		log('Missing required parameters', 'WARNING', __filename, { phone: req.body.phoneNumber }, user.id);
+		return res
+			.status(400)
+			.json({ OK: false, message: 'At least one of these parameters must be provided: ContactID, phoneNumber' });
 	}
 
 	req.body.message = req.body.message.trim();
@@ -41,10 +57,9 @@ async function sendSms(req: Request<any>, res: Response<any>) {
 		return;
 	}
 
-	const contact = await getOrCreateContact(phone);
 	if (!contact) {
 		res.status(500).json({ OK: false, message: 'contact insertion failed' });
-		log('contact insertion failed', 'ERROR', __filename, { contact, phone, user });
+		log('contact insertion failed', 'ERROR', __filename, { contact, user }, user.id);
 		return;
 	}
 
