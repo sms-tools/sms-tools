@@ -1,0 +1,3 @@
+[submodule "services/ui"]
+	path = services/ui
+	url = git@github.com:sms-tools/sms-tools-ui.git

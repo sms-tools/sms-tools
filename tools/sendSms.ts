@@ -14,6 +14,7 @@ class SmsSender {
 	runing: boolean;
 	constructor() {
 		//android limitation for sms send
+		// see https://www.xda-developers.com/change-sms-limit-android/
 		this.timeBetwenSend = 5000;
 		this.pending = [];
 		this.runing = false;
