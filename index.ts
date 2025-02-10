@@ -132,4 +132,4 @@ const smsSender = new SmsSender();
 const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
 const servicesClass = loadServices(app, SseSuscriber, smsSender);
 
-export { smsSender, SseSuscriber, servicesClass };
+export { smsSender, SseSuscriber, servicesClass, app };

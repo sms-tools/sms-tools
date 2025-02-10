@@ -2,11 +2,10 @@ import { config } from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { User } from '../models/user.model';
-import login from '../services/api/router/login';
 import { Message } from '../models/message.model';
+import { User } from '../models/user.model';
 import getMessage from '../services/api/router/getMessage';
-import { Contact } from '../models/contact.model';
+import login from '../services/api/router/login';
 
 config();
 const app = express();
