@@ -1,9 +1,9 @@
 import wiki, { languageResult, wikiSummary } from 'wikipedia';
+import { smsSender } from '../..';
 import { User } from '../../models/user.model';
 import { bolderize } from '../../tools/tools';
 import ServicesClass from '../service';
 import { WikipediaModel } from './wikipediaData.model';
-import { SmsSender } from '../../tools/sendSms';
 
 class wikipedia extends ServicesClass {
 	constructor() {
@@ -15,18 +15,18 @@ class wikipedia extends ServicesClass {
 		this.commands = ['event', 'selectlanguage', 'search'];
 	}
 
-	async newMessage(user: InstanceType<typeof User>, message: string, smsSender: SmsSender) {
+	async newMessage(user: InstanceType<typeof User>, message: string) {
 		const language = (await WikipediaModel.findOne({ userID: user._id }, ['language']))?.language ?? 'en';
 		if (message.startsWith('event')) {
 			message = message.replace('event', '');
-			this.event(user, message, language, smsSender);
+			this.event(user, message, language);
 		} else if (message.startsWith('selectlanguage') || message.startsWith('sl')) {
 			message = message.replace('sl', '');
 			message = message.replace('selectlanguage', '');
-			this.changeLanguage(user, message, smsSender);
+			this.changeLanguage(user, message);
 		} else if (message.startsWith('search')) {
 			message = message.replace('search', '');
-			this.search(user, message, language, smsSender);
+			this.search(user, message, language);
 		} else {
 			smsSender.sendSms(
 				user,
@@ -42,7 +42,7 @@ ${bolderize('home')}: Go back to the main menu`,
 		}
 	}
 
-	private async search(user: InstanceType<typeof User>, message: string, language: string, smsSender: SmsSender) {
+	private async search(user: InstanceType<typeof User>, message: string, language: string) {
 		if (message.trim() == '') {
 			smsSender.sendSms(user, 'Usage: search <terms>\nfor exemple:\nsearch batman', undefined, this.name);
 			return;
@@ -80,7 +80,7 @@ ${bolderize('home')}: Go back to the main menu`,
 		}
 	}
 
-	private async changeLanguage(user: InstanceType<typeof User>, message: string, smsSender: SmsSender) {
+	private async changeLanguage(user: InstanceType<typeof User>, message: string) {
 		message = message.trim();
 		if (message != '') {
 			const language = await wiki.languages();
@@ -123,7 +123,7 @@ ${bolderize('home')}: Go back to the main menu`,
 		}
 	}
 
-	private async event(user: InstanceType<typeof User>, message: string, language: string, smsSender: SmsSender) {
+	private async event(user: InstanceType<typeof User>, message: string, language: string) {
 		try {
 			wiki.setLang(language);
 			const events = await wiki.onThisDay({ type: 'selected' });

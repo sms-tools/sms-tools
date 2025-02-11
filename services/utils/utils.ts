@@ -1,3 +1,4 @@
+import { smsSender } from '../..';
 import { Contact } from '../../models/contact.model';
 import { User } from '../../models/user.model';
 import { log } from '../../tools/log';
@@ -15,10 +16,10 @@ class Utils extends ServicesClass {
 		this.type = 'command';
 		this.commands = ['1z', '2z', '3z'];
 	}
-	async newMessage(user: InstanceType<typeof User>, message: string, smsSender: SmsSender) {
+	async newMessage(user: InstanceType<typeof User>, message: string) {
 		const Util_Action = (await UtilModel.findOne({ userID: user._id }, ['Util_Action']))?.Util_Action;
 		if (Util_Action == 'sendat') {
-			this.sendAt(user, message, smsSender);
+			this.sendAt(user, message);
 			return;
 		}
 		if (message == 'ping') {
@@ -30,7 +31,7 @@ class Utils extends ServicesClass {
 				{ upsert: true, setDefaultsOnInsert: true }
 			);
 			message = message.replace('sendat ', '');
-			this.sendAt(user, message, smsSender);
+			this.sendAt(user, message);
 		} else {
 			smsSender.sendSms(
 				user,
@@ -43,7 +44,7 @@ ${bolderize('home')}: Go back to the main menu`
 		}
 	}
 
-	private async sendAt(user: InstanceType<typeof User>, message: string, smsSender: SmsSender) {
+	private async sendAt(user: InstanceType<typeof User>, message: string) {
 		const Util_recPhone = (await UtilModel.findOne({ userID: user._id }, ['Util_recPhone']))?.Util_recPhone;
 		if (!Util_recPhone) {
 			const messageSplit = message.split(' ');
@@ -138,7 +139,7 @@ y/n`
 		} else {
 			await UtilModel.deleteOne({ userID: user._id });
 			smsSender.sendSms(user, 'message aborted.');
-			this.newMessage(user, '', smsSender);
+			this.newMessage(user, '');
 		}
 	}
 
@@ -153,12 +154,12 @@ y/n`
 			smsSender.sendSms(contact, Util_Message + '\n\n' + bolderize('This message is forwarded. Do not reply'));
 			smsSender.sendSms(user, 'message send');
 			await UtilModel.deleteOne({ userID: user._id });
-			this.newMessage(user, '', smsSender);
+			this.newMessage(user, '');
 		} else {
 			log('error on create contact', 'ERROR', __filename, { Util_recPhone, contact });
 			smsSender.sendSms(user, 'error on send, contact administrator');
 			await UtilModel.deleteOne({ userID: user._id });
-			this.newMessage(user, '', smsSender);
+			this.newMessage(user, '');
 		}
 	}
 

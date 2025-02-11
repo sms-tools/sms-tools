@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
-import authenticate from '../authentificate';
-import { checkParameters, getContact, getOrCreateContact } from '../../../tools/tools';
-import { log } from '../../../tools/log';
-import { Contact } from '../../../models/contact.model';
-import sendSms from './sendSms';
 import { smsSender } from '../../..';
+import { Contact } from '../../../models/contact.model';
 import { User } from '../../../models/user.model';
+import { log } from '../../../tools/log';
+import { checkParameters, getContact, getOrCreateContact } from '../../../tools/tools';
+import authenticate from '../authentificate';
 
 async function sendManySms(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
