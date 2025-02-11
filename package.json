@@ -6,8 +6,7 @@
 	"scripts": {
 		"start": "npx ts-node index.ts",
 		"dev": "npx nodemon index.ts",
-		"dev:all:linux": "npm run dev & for d in services/*/; do if [ -f \"$d/package.json\" ]; then (cd \"$d\" && npm run dev); fi; done",
-		"dev:all:win": "npm run dev -and Get-ChildItem -Directory services | ForEach-Object { if (Test-Path $_/package.json) { Start-Process npm -ArgumentList 'run dev' -WorkingDirectory $_.FullName -NoNewWindow } }",
+		"dev:all:linux": "npm run dev && for d in services/*/; do if [ -f \"$d/package.json\" ]; then (cd \"$d\" && npm run dev); fi; done",
 		"test": "jest --testTimeout=10000 -o"
 	},
 	"author": {
