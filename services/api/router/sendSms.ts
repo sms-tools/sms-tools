@@ -5,6 +5,12 @@ import { Contact } from '../../../models/contact.model';
 import { log } from '../../../tools/log';
 import { checkParameters, clearPhone, getOrCreateContact, phoneNumberCheck } from '../../../tools/tools';
 import authenticate from '../authentificate';
+import { log } from '../../../tools/log';
+import { SmsSender } from '../../../tools/sendSms';
+import { checkParameters, clearPhone, getOrCreateContact, phoneNumberCheck, getContact } from '../../../tools/tools';
+import authenticate from '../authentificate';
+import { Contact } from '../../../models/contact.model';
+import mongoose from 'mongoose';
 
 async function sendSms(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
