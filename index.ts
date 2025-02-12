@@ -53,9 +53,19 @@ const server = https.createServer(
 	app
 );
 
-server.listen(443, () => {
-	log(`Server started on port ${(server.address() as AddressInfo).port}`, 'INFO', __filename);
-});
+server
+	.listen(443, () => {
+		log(`Server started on https://localhost:${(server.address() as AddressInfo).port}`, 'INFO', __filename);
+	})
+	.on('error', err => {
+		server.listen(8080, () => {
+			log(
+				`Server started on port https://localhost:${(server.address() as AddressInfo).port}`,
+				'INFO',
+				__filename
+			);
+		});
+	});
 
 app.post('/', async (req, res) => {
 	res.status(200).send('Hello World');
