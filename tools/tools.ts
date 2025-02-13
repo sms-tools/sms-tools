@@ -164,9 +164,10 @@ async function getContact(phoneNumber: string): Promise<InstanceType<typeof Cont
 	}
 	return contact;
 }
-async function createContact(phoneNumber: string): Promise<InstanceType<typeof Contact> | undefined> {
+async function createContact(phoneNumber: string, name?: string): Promise<InstanceType<typeof Contact> | undefined> {
 	const contact = await Contact.create({
-		phoneNumber: clearPhone(phoneNumber)
+		phoneNumber: clearPhone(phoneNumber),
+		contactName: name
 	});
 	if (!contact) {
 		log('error in creating client', 'WARNING', __filename);
@@ -175,9 +176,12 @@ async function createContact(phoneNumber: string): Promise<InstanceType<typeof C
 	return contact;
 }
 
-async function getOrCreateContact(phoneNumber: string): Promise<InstanceType<typeof Contact> | undefined> {
+async function getOrCreateContact(
+	phoneNumber: string,
+	name?: string
+): Promise<InstanceType<typeof Contact> | undefined> {
 	let contact = await getContact(phoneNumber);
-	if (!contact) contact = await createContact(phoneNumber);
+	if (!contact) contact = await createContact(phoneNumber, name);
 	return contact;
 }
 

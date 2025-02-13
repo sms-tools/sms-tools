@@ -30,23 +30,50 @@ async function sendManySms(req: Request<any>, res: Response<any>) {
 	}
 
 	const errors: Array<[string /*phone*/, string /*reason*/]> = [];
-	const sleep: Array<Promise<boolean>> = req.body.data.map(async (usr: string | any) => {
+	//create sse header
+	res.writeHead(200, {
+		Connection: 'keep-alive',
+		'Cache-Control': 'no-cache',
+		'Content-Type': 'text/event-stream'
+	});
+	const sleep: Array<Promise<boolean>> = req.body.data.map(async (usr: [string, string]) => {
 		let contact: InstanceType<typeof Contact> | undefined;
 		if (req.body.createIfNotExist != false) {
-			contact = await getOrCreateContact(usr);
+			contact = await getOrCreateContact(usr[1], usr[0]);
 		} else {
-			contact = await getContact(usr);
+			contact = await getContact(usr[1]);
 		}
 
-		if (!contact) {
-			errors.push([usr, 'not found']);
-			return false;
-		}
+		//create promise for await sent final status
+		await new Promise(async resolve => {
+			if (!contact) {
+				//error is an final status
+				res.write(`data: ${JSON.stringify({ phone: usr[1], status: 'errored' })}\n\n`, resolve);
+				return false;
+			}
 
-		smsSender.sendSms(contact, req.body.mesage, (await User.findById(user.id)) ?? undefined, user.id.toString());
+			await smsSender.sendSms(
+				contact,
+				req.body.message,
+				(await User.findById(user.id)) ?? undefined,
+				user.id.toString(),
+				async status => {
+					//await send of new status
+					await new Promise(async resolve => {
+						res.write(`data: ${JSON.stringify({ phone: usr[1], status })}\n\n`, resolve);
+					});
+					if (status == 'errored' || status == 'send') {
+						//if we have final status, request is end
+						resolve(true);
+					}
+				}
+			);
+		});
 	});
 
 	await Promise.all(sleep);
-	res.status(200).send({ message: 'OK', OK: true, errors: errors });
+	res.end();
 	log(req.body.data.length + ' sms send', 'INFO', __filename, { send: req.body.data, errors, user }, user.id);
 }
+
+export default sendManySms;

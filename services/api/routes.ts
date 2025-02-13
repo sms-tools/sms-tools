@@ -7,6 +7,7 @@ import getNewMessage from './router/getNewMessage';
 import getProgress from './router/getProgress';
 import login from './router/login';
 import sendSms from './router/sendSms';
+import sendManySms from './router/sendManySms';
 
 function router() {
 	const route = Router();
@@ -19,6 +20,7 @@ function router() {
 	route.post('/sendSms', sendSms);
 	route.post('/getContact', getContact);
 	route.post('/contactInfo', ContactInfo);
+	route.post('/sendManySms', sendManySms);
 
 	return route;
 }
