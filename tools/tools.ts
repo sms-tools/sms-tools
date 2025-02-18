@@ -123,7 +123,9 @@ async function loadServices(
 			const servicePath = path.join(servicesDir, dir.name, dir.name + '.ts');
 			try {
 				//import class
-				const module = await import(servicePath);
+				let module;
+				if (isInTsxExecutor()) module = await import('file://' + servicePath);
+				else module = await import(servicePath);
 				if (module.default) {
 					//if import default works
 					services.push(new module.default());
@@ -134,7 +136,9 @@ async function loadServices(
 				const routerPath = path.join(servicesDir, dir.name, 'routes.ts');
 				if (fs.existsSync(routerPath)) {
 					//import router file
-					const router = await import(routerPath);
+					let router;
+					if (isInTsxExecutor()) router = await import('file://' + routerPath);
+					else router = await import(routerPath);
 					if (router.default) {
 						// use routes /name/helloWorld . inject SseSuscriber if sse subscription is requied
 						expressServer.use('/' + dir.name, router.default(SseSuscriber, smsSender));
@@ -144,6 +148,7 @@ async function loadServices(
 					}
 				}
 			} catch (error) {
+				console.log(error);
 				log(`error on import of ${dir.name}`, 'ERROR', __filename, { error });
 			}
 		}
@@ -313,6 +318,11 @@ function checkParameters(
 		// 	return false;
 	}
 	return true;
+}
+
+function isInTsxExecutor() {
+	if (process?.execArgv?.at(3)?.includes('tsx') ?? false) return true;
+	else return false;
 }
 
 export {

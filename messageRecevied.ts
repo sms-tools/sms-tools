@@ -98,14 +98,8 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 	${bolderize('home')}: return on this menu`
 		);
 	} else {
-		(await servicesClass).forEach(async serv => {
-			if (serv.type == 'message') {
-				log(`Message transfered to ${serv.name}`, 'INFO', __filename, { message, user: user, serv }, serv.name);
-				serv.newMessage(user, message);
-			}
-		});
+		// do nothing
 	}
-	await messageObj;
 }
 
 export default messageRecevied;
