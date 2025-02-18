@@ -45,22 +45,14 @@ if (process.env.JEST_WORKER_ID == undefined) {
 }
 //////////////////////////express server/////////////////////////////////////////////
 
-const server = https.createServer(
-	{
-		key: fs.readFileSync('server.key'),
-		cert: fs.readFileSync('server.crt')
-	},
-	app
-);
-
-server
+const listener = app
 	.listen(443, () => {
-		log(`Server started on https://localhost:${(server.address() as AddressInfo).port}`, 'INFO', __filename);
+		log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
 	})
 	.on('error', err => {
-		server.listen(8080, () => {
+		app.listen(8080, () => {
 			log(
-				`Server started on port https://localhost:${(server.address() as AddressInfo).port}`,
+				`Server started on port https://localhost:${(listener.address() as AddressInfo).port}`,
 				'INFO',
 				__filename
 			);
