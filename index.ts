@@ -1,8 +1,6 @@
 import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
-import fs from 'fs';
-import https from 'https';
 import mongoose from 'mongoose';
 import { AddressInfo } from 'net';
 import { eventDelivered, eventfailed, eventSent } from './messageEvent';
@@ -45,19 +43,9 @@ if (process.env.JEST_WORKER_ID == undefined) {
 }
 //////////////////////////express server/////////////////////////////////////////////
 
-const listener = app
-	.listen(443, () => {
-		log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
-	})
-	.on('error', err => {
-		app.listen(8080, () => {
-			log(
-				`Server started on port https://localhost:${(listener.address() as AddressInfo).port}`,
-				'INFO',
-				__filename
-			);
-		});
-	});
+const listener = app.listen(8080, () => {
+	log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
+});
 
 app.post('/', async (req, res) => {
 	res.status(200).send('Hello World');
@@ -134,4 +122,4 @@ const smsSender = new SmsSender();
 const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
 const servicesClass = loadServices(app, SseSuscriber, smsSender);
 
-export { smsSender, SseSuscriber, servicesClass, app };
+export { app, servicesClass, smsSender, SseSuscriber };
