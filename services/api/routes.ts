@@ -12,6 +12,9 @@ import sendManySms from './router/sendManySms';
 function router() {
 	const route = Router();
 
+	route.get('/', (req, res) => {
+		res.send('hello on sms-tools:api');
+	});
 	route.post('/login', login);
 	route.post('/getMessage', getMessage);
 	route.post('/createContact', createContact);

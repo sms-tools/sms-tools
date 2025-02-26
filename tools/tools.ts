@@ -106,11 +106,7 @@ async function getUser(phoneNumber: string): Promise<InstanceType<typeof User> |
 	return user;
 }
 
-async function loadServices(
-	expressServer: Express,
-	SseSuscriber: Map<string, Array<(message: InstanceType<typeof Message>) => void>>,
-	smsSender: SmsSender
-): Promise<Array<ServicesClass>> {
+async function loadServices(expressServer: Express): Promise<Array<ServicesClass>> {
 	const services: Array<ServicesClass> = [];
 	const servicesDir = path.resolve(__dirname, '../services');
 
@@ -140,15 +136,14 @@ async function loadServices(
 					if (isInTsxExecutor()) router = await import('file://' + routerPath);
 					else router = await import(routerPath);
 					if (router.default) {
-						// use routes /name/helloWorld . inject SseSuscriber if sse subscription is requied
-						expressServer.use('/' + dir.name, router.default(SseSuscriber, smsSender));
+						// use routes /name/helloWorld .
+						expressServer.use('/' + dir.name, router.default());
 						log(`new router added from ${routerPath} services`, 'INFO', __filename);
 					} else {
 						log(`no router found on ${routerPath}`, 'ERROR', __filename);
 					}
 				}
 			} catch (error) {
-				console.log(error);
 				log(`error on import of ${dir.name}`, 'ERROR', __filename, { error });
 			}
 		}

@@ -120,6 +120,6 @@ app.get('/getNewMessage', (req, res) => getNewMessage(req, res));
 //////////////////////////create class/////////////////////////////////////////////
 const smsSender = new SmsSender();
 const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
-const servicesClass = loadServices(app, SseSuscriber, smsSender);
+const servicesClass = loadServices(app);
 
 export { app, servicesClass, smsSender, SseSuscriber };

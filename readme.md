@@ -96,4 +96,4 @@ for acces to this route, the link is /{service_name}/hello
 
 # Usage
 
-todo chained comand
+todo chained comand, warnign with node module on submodules
