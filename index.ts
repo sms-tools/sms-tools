@@ -5,11 +5,13 @@ import mongoose from 'mongoose';
 import { AddressInfo } from 'net';
 import { eventDelivered, eventfailed, eventSent } from './messageEvent';
 import messageRecevied from './messageRecevied';
-import { Message } from './models/message.model';
-import getNewMessage from './services/api/router/getNewMessage';
+import getNewMessage from './services/api/router/getNewEvent';
 import { log } from './tools/log';
 import { SmsSender } from './tools/sendSms';
 import { clearPhone, getOrCreateContact, IsPhoneNumber, loadServices } from './tools/tools';
+import { sseEvent } from './declaration';
+import https from 'https';
+import fs from 'node:fs';
 
 config();
 const app = express();
@@ -19,6 +21,7 @@ app.use(cors());
 //////////////////////////data base/////////////////////////////////////////////
 
 // in test, the test script will create the connection to the database
+let server;
 if (process.env.JEST_WORKER_ID == undefined) {
 	// Connect to MongoDB using Mongoose
 	if (process.env.ISDEV == 'false') {
@@ -39,13 +42,26 @@ if (process.env.JEST_WORKER_ID == undefined) {
 			.catch(error => {
 				log('Error connecting to MongoDB: ' + error, 'CRITICAL', __filename);
 			});
+
+		server = https.createServer(
+			{
+				key: fs.readFileSync('server.key'),
+				cert: fs.readFileSync('server.crt')
+			},
+			app
+		);
 	}
 }
 //////////////////////////express server/////////////////////////////////////////////
-
-const listener = app.listen(8080, () => {
-	log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
-});
+if (!server) {
+	const listener = app.listen(8080, () => {
+		log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
+	});
+} else {
+	const listener = server.listen(8080, () => {
+		log(`Server started on https://localhost:${(listener.address() as AddressInfo).port}`, 'INFO', __filename);
+	});
+}
 
 app.post('/', async (req, res) => {
 	res.status(200).send('Hello World');
@@ -119,7 +135,7 @@ app.get('/getNewMessage', (req, res) => getNewMessage(req, res));
 
 //////////////////////////create class/////////////////////////////////////////////
 const smsSender = new SmsSender();
-const SseSuscriber = new Map<string, Array<(message: InstanceType<typeof Message>) => void>>(); // Map<phone, sseSender>;
+const SseSuscriber = new Map<string, (event: sseEvent) => void>(); // Map<phone, sseSender>;
 const servicesClass = loadServices(app);
 
 export { app, servicesClass, smsSender, SseSuscriber };

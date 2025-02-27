@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { Message } from '../../../models/message.model';
+import { SseSuscriber } from '../../..';
 import { log } from '../../../tools/log';
 import { checkParameters, clearPhone, getContact, phoneNumberCheck } from '../../../tools/tools';
 import authenticate from '../authentificate';
-import { SseSuscriber } from '../../..';
+import { sseEvent } from '../../../declaration';
 
-async function getNewMessage(req: Request<any>, res: Response<any>) {
+async function getNewEvent(req: Request<any>, res: Response<any>) {
 	const user = authenticate(req, res);
 	if (!user) return;
 
@@ -54,28 +54,22 @@ async function getNewMessage(req: Request<any>, res: Response<any>) {
 	log('Client connected to SSE', 'INFO', __filename, { contactId }, user.id);
 
 	// aff callback to sse shared object
-	const subscribers = SseSuscriber.get(contactId.toString()) || [];
-	const sendMessage = (message: InstanceType<typeof Message>) => {
+	const id = Date.now().toString(36);
+	const sendMessage = (event: sseEvent) => {
 		try {
-			res.write(`${JSON.stringify(message)}`);
+			res.write(`${JSON.stringify(event)}`);
 		} catch (error) {
 			log('Error sending SSE message', 'ERROR', __filename, { contactId, error }, user.id);
 		}
 	};
-	subscribers.push(sendMessage);
-	SseSuscriber.set(contactId.toString(), subscribers);
+	SseSuscriber.set(id, sendMessage);
 
 	// if client is desconected
 	res.on('close', () => {
 		log('Client disconnected from SSE', 'INFO', __filename, { contactId }, user.id);
-		const updatedSubscribers = SseSuscriber.get(contactId.toString())?.filter(cb => cb !== sendMessage);
-		if (updatedSubscribers?.length) {
-			SseSuscriber.set(contactId.toString(), updatedSubscribers);
-		} else {
-			SseSuscriber.delete(contactId.toString());
-		}
+		SseSuscriber.delete(id);
 		res.end();
 	});
 }
 
-export default getNewMessage;
+export default getNewEvent;

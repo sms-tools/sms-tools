@@ -5,6 +5,7 @@ import { log } from './tools/log';
 import { bolderize, getUser } from './tools/tools';
 
 async function messageRecevied(message: string, contact: InstanceType<typeof Contact>, messageId: string) {
+	const receivedDate = new Date();
 	message = message.trim().toLowerCase();
 	log(`Message received`, 'INFO', __filename, { message, user: contact }, contact?._id.toString());
 
@@ -13,12 +14,19 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 		direction: true,
 		status: 'received',
 		messageId,
-		deliveredAt: new Date(),
+		deliveredAt: receivedDate,
 		contactID: contact.id
 	}).save();
 
 	//send to all sse suscrible client
-	if (SseSuscriber.has(contact._id.toString())) SseSuscriber.get(contact._id.toString())?.forEach(f => f(messageObj));
+	if (SseSuscriber && messageObj)
+		SseSuscriber.forEach(e =>
+			e({
+				contactID: contact.id,
+				event: 'recevied',
+				status: { deliveredAt: receivedDate }
+			})
+		);
 
 	const user = await getUser(contact.phoneNumber);
 	//if this phone is not  an  user command is forbidden

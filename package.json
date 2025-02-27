@@ -5,7 +5,7 @@
 	"main": "index.ts",
 	"scripts": {
 		"start": "npx ts-node index.ts",
-		"dev": "npx nodemon index.ts",
+		"dev": "tsx --watch .",
 		"dev:all:linux": "npm run dev && for d in services/*/; do if [ -f \"$d/package.json\" ]; then (cd \"$d\" && npm run dev); fi; done",
 		"test": "jest --testTimeout=10000 -o"
 	},
