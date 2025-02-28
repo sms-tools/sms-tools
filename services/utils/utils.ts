@@ -14,7 +14,7 @@ class Utils extends ServicesClass {
 		this.description = 'many tools for sms';
 		this.version = '1.0';
 		this.type = 'command';
-		this.commands = ['1z', '2z', '3z'];
+		this.commands = ['ping', 'Pong!'];
 	}
 	async newMessage(user: InstanceType<typeof User>, message: string) {
 		const Util_Action = (await UtilModel.findOne({ userID: user._id }, ['Util_Action']))?.Util_Action;

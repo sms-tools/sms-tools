@@ -53,6 +53,7 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 					serv.name
 				);
 				serv.newMessage(user, message);
+				return;
 			}
 		});
 		//if user is in service

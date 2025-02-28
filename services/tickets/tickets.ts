@@ -42,19 +42,19 @@ ${bolderize('home')}: Go back to the main menu`
 				`Cars Région
 Titre 3 zones
 
-Valable 2h
+Valable 1h
 ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} à ${hoursEnd.toLocaleTimeString('fr-FR', {
 					hour: '2-digit',
 					minute: '2-digit'
 				})}
 ${day}.${month}.${year}
-6.90 euros
+7.30 euros
 
 A PRÉSENTER AU CONDUCTEUR
 
 78'52'72'38'99'34
 
-${user.phoneNumber.replaceAll('+33', '')}S0XU
+${user.phoneNumber.replaceAll('+33', '')}YZ9C
 bit.ly/CGVticketSMS
 			`
 			);

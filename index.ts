@@ -131,7 +131,6 @@ app.post('/failed', (req, res) => {
 });
 
 app.get('/getNewMessage', (req, res) => getNewMessage(req, res));
-//app.use(router);
 
 //////////////////////////create class/////////////////////////////////////////////
 const smsSender = new SmsSender();
