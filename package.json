@@ -50,7 +50,7 @@
 		"express": "^4.21.0",
 		"jest": "^29.7.0",
 		"jsonwebtoken": "^9.0.2",
-		"mongoose": "^8.8.1",
+		"mongoose": "^8.9.5",
 		"supertest": "^7.0.0",
 		"ts-jest": "^29.2.5",
 		"wikipedia": "^2.1.2"
