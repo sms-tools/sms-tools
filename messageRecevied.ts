@@ -42,20 +42,23 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 	}
 
 	if (user.commandPermeted) {
-		//bypass command (after home command)
-		(await servicesClass).forEach(async serv => {
-			if (serv.type == 'command' && serv.bypassTrigger.find(e => e == message)) {
+		//bypass command (disponible evrerywhere)
+		let bypassfound = false;
+		(await servicesClass).forEach(async service => {
+			if (service.type == 'command' && service.bypassTrigger.find(e => e == message)) {
 				log(
-					`Message transfered for bypass to ${serv.name}`,
+					`Message transfered for bypass to ${service.name}`,
 					'INFO',
 					__filename,
-					{ message, user: contact, serv },
-					serv.name
+					{ message, user: contact, serv: service },
+					service.name
 				);
-				serv.newMessage(user, message);
-				return;
+				service.newMessage(user, message);
+				bypassfound = true;
 			}
 		});
+		if (bypassfound) return;
+
 		//if user is in service
 		if (user.currentServices != 'nothing') {
 			const service = (await servicesClass).find(e => e.name == user.currentServices);
@@ -74,8 +77,7 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 			const service = (await servicesClass).at(firstWorldNumber);
 			if (service) {
 				await user.updateOne({ currentServices: service.name });
-				//if only one argument
-				if (messageSplit.length == 1) {
+				if (messageSplit.length >= 1) {
 					log('user is enter in services', 'INFO', __filename, { user: user, service });
 					service.newMessage(user, messageSplit.slice(1).join(' '));
 				}
@@ -88,8 +90,7 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 			const serv = (await servicesClass).find(e => e.name == firstWorld);
 			if (serv) {
 				await user.updateOne({ currentServices: serv.name });
-				//if only one argument
-				if (messageSplit.length == 1) {
+				if (messageSplit.length >= 1) {
 					log('user is enter in services', 'INFO', __filename, { user: user, serv });
 					serv.newMessage(user, messageSplit.slice(1).join(' '));
 				}
