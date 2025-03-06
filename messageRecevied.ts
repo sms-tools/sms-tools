@@ -106,7 +106,7 @@ ${(await servicesClass)
 	.map((el, i) => {
 		return bolderize(i.toString() + ': ' + el.name) + ' ' + el.description + '\n';
 	})
-	.join()}
+	.join('')}
 ${bolderize('home')}: return on this menu`
 		);
 	} else {
