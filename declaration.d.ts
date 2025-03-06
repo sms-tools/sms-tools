@@ -1,13 +1,16 @@
 type sseEvent = {
 	contactID: string;
+	messageID: string;
 	event: 'send' | 'delivered' | 'failed' | 'recevied';
-	status: sendEvent | deliveredEvent | failedEvent;
+	status: sendEvent | deliveredEvent | failedEvent | receivedEvent;
 };
 
 type sendEvent = {
 	userID: mongoose.Schema.ObjectId;
-	message: String;
+	message: string;
 	sendAt: Date;
+	contactName: string;
+	phoneNumber: string;
 };
 
 type deliveredEvent = {
@@ -20,6 +23,9 @@ type failedEvent = {
 
 type receivedEvent = {
 	deliveredAt: Date;
+	message: string;
+	contactName: string;
+	phoneNumber: string;
 };
 
 export { sseEvent, sendEvent, deliveredEvent, failedEvent, receivedEvent };

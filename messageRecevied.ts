@@ -23,8 +23,14 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 		SseSuscriber.forEach(e =>
 			e({
 				contactID: contact.id,
+				messageID: messageObj._id.toString(),
 				event: 'recevied',
-				status: { deliveredAt: receivedDate }
+				status: {
+					deliveredAt: receivedDate,
+					contactName: contact.contactName ?? 'unnamed',
+					phoneNumber: contact.phoneNumber,
+					message
+				}
 			})
 		);
 
