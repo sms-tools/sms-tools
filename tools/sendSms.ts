@@ -74,6 +74,7 @@ class SmsSender {
 		initiator: string = 'root',
 		status?: (status: 'errored' | 'pending' | 'queuing' | 'send') => void
 	): Promise<InstanceType<typeof Message> | void> {
+		//proprify phonenumber
 		const phone = clearPhone(contact.phoneNumber);
 		if (!phone) {
 			log('Bad phone:', 'ERROR', __filename, { message, contact }, initiator);

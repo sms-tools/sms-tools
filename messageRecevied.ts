@@ -102,10 +102,12 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 		smsSender.sendSms(
 			user,
 			`Select an application:
-	${(await servicesClass).map((el, i) => {
+${(await servicesClass)
+	.map((el, i) => {
 		return bolderize(i.toString() + ': ' + el.name) + ' ' + el.description + '\n';
-	})}
-	${bolderize('home')}: return on this menu`
+	})
+	.join()}
+${bolderize('home')}: return on this menu`
 		);
 	} else {
 		// do nothing

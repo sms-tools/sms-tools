@@ -16,7 +16,17 @@ import fs from 'node:fs';
 config();
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use((req, res, next) => {
+	const origin =
+		process.env.ISDEV == 'false' ? ['https://sms.mpqa.fr'] : ['http://localhost:5173', 'https://sms.mpqa.fr'];
+	if (origin.includes(req.headers.origin ?? '')) {
+		res.header('Access-Control-Allow-Origin', req.headers.origin);
+	}
+	res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+	res.header('Access-Control-Allow-Credentials', 'true');
+	next();
+});
 
 //////////////////////////data base/////////////////////////////////////////////
 

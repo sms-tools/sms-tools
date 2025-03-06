@@ -53,6 +53,7 @@
 		"mongoose": "^8.9.5",
 		"supertest": "^7.0.0",
 		"ts-jest": "^29.2.5",
+		"tsx": "^4.19.3",
 		"wikipedia": "^2.1.2"
 	},
 	"devDependencies": {
