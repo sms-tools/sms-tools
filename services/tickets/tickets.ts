@@ -24,7 +24,7 @@ class tickets extends ServicesClass {
 ${bolderize('1z 🚀')} reply by one area tickets
 ${bolderize('2z 🚀')} reply by two areas tickets
 ${bolderize('3z 🚀')} reply by three areas tickets
-		
+
 ${bolderize('home')}: Go back to the main menu`
 			);
 	}
@@ -36,7 +36,7 @@ ${bolderize('home')}: Go back to the main menu`
 			const month = (date.getMonth() + 1).toString().padStart(2, '0');
 			const year = date.getFullYear().toString().slice(-2);
 			const hoursEnd = new Date();
-			hoursEnd.setHours(hoursEnd.getHours() + 2);
+			hoursEnd.setHours(hoursEnd.getHours() + 1);
 			smsSender.sendSms(
 				user,
 				`Cars Région
