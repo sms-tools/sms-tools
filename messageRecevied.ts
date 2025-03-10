@@ -25,10 +25,10 @@ async function messageRecevied(message: string, contact: InstanceType<typeof Con
 				contactID: contact.id,
 				messageID: messageObj._id.toString(),
 				event: 'recevied',
+				phoneNumber: contact.phoneNumber,
 				status: {
 					deliveredAt: receivedDate,
 					contactName: contact.contactName ?? 'unnamed',
-					phoneNumber: contact.phoneNumber,
 					message
 				}
 			})

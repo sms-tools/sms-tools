@@ -1,6 +1,7 @@
 type sseEvent = {
 	contactID: string;
 	messageID: string;
+	phoneNumber: string;
 	event: 'send' | 'delivered' | 'failed' | 'recevied';
 	status: sendEvent | deliveredEvent | failedEvent | receivedEvent;
 };
@@ -10,7 +11,6 @@ type sendEvent = {
 	message: string;
 	sendAt: Date;
 	contactName: string;
-	phoneNumber: string;
 };
 
 type deliveredEvent = {
@@ -25,7 +25,6 @@ type receivedEvent = {
 	deliveredAt: Date;
 	message: string;
 	contactName: string;
-	phoneNumber: string;
 };
 
 export { sseEvent, sendEvent, deliveredEvent, failedEvent, receivedEvent };
