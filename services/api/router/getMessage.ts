@@ -77,9 +77,9 @@ async function getMessage(req: Request<any>, res: Response<any>) {
 		skip: req.body.page ?? 0 * req.body.size
 	})
 		.limit(req.body.size ?? 50)
-		.sort({ date: 1 })
+		.sort({ date: -1 })
 		.cursor()
-		.eachAsync(msg => msgList.push(msg));
+		.eachAsync(msg => msgList.unshift(msg));
 	log('user reqested ' + msgList.length + ' messages', 'INFO', __filename, { size: req.body.size }, user.id);
 	res.status(200).send({ message: msgList.length + ' data send', data: msgList, OK: true });
 }
