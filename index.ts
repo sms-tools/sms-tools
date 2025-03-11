@@ -1,17 +1,16 @@
-import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
+import https from 'https';
 import mongoose from 'mongoose';
 import { AddressInfo } from 'net';
+import fs from 'node:fs';
+import { sseEvent } from './declaration';
 import { eventDelivered, eventfailed, eventSent } from './messageEvent';
 import messageRecevied from './messageRecevied';
 import getNewMessage from './services/api/router/getNewEvent';
 import { log } from './tools/log';
 import { SmsSender } from './tools/sendSms';
 import { clearPhone, getOrCreateContact, IsPhoneNumber, loadServices } from './tools/tools';
-import { sseEvent } from './declaration';
-import https from 'https';
-import fs from 'node:fs';
 
 config();
 const app = express();
@@ -55,8 +54,9 @@ if (process.env.JEST_WORKER_ID == undefined) {
 
 		server = https.createServer(
 			{
-				key: fs.readFileSync('server.key'),
-				cert: fs.readFileSync('server.crt')
+				key: fs.readFileSync('cert/server.key'),
+				cert: fs.readFileSync('cert/server.crt'),
+				ca: fs.readFileSync('cert/ca.crt')
 			},
 			app
 		);

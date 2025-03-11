@@ -7,7 +7,4 @@ services/LLamaServer/config.json
 *.http
 *.log
 config.json
-ca.crt
-server.cnf
-server.crt
-server.key
+cert/
