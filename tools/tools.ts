@@ -137,7 +137,7 @@ async function loadServices(expressServer: Express): Promise<Array<ServicesClass
 					else router = await import(routerPath);
 					if (router.default) {
 						// use routes /name/helloWorld .
-						expressServer.use('/' + dir.name, router.default());
+						expressServer.use('/' + dir.name + '/*', router.default());
 						log(`new router added from ${routerPath} services`, 'INFO', __filename);
 					} else {
 						log(`no router found on ${routerPath}`, 'ERROR', __filename);
