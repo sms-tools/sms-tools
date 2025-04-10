@@ -23,8 +23,11 @@ async function ContactInfo(req: Request<any>, res: Response<any>) {
 		return;
 
 	let contactId = req.body.ContactID;
-
 	if (!contactId && !req.body.phoneNumber) {
+		log('Missing required parameters', 'WARNING', __filename, { phone: req.body.phoneNumber }, user.id);
+		return res.status(400).send('At least one of these parameters must be provided: ContactID, phoneNumber');
+	}
+	if (!contactId || !req.body.phoneNumber) {
 		const phone = clearPhone(req.body.phoneNumber);
 		if (!phoneNumberCheck(phone)) {
 			log('Invalid phone number provided', 'WARNING', __filename, {}, user.id);
@@ -39,7 +42,6 @@ async function ContactInfo(req: Request<any>, res: Response<any>) {
 
 		contactId = contact._id.toString();
 	}
-
 	if (!contactId) {
 		log('Missing required parameters', 'WARNING', __filename, { phone: req.body.phoneNumber }, user.id);
 		return res.status(400).send('At least one of these parameters must be provided: ContactID, phoneNumber');

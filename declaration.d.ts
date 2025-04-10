@@ -1,9 +1,9 @@
 type sseEvent = {
 	contactID: string;
 	messageID: string;
-	phoneNumber: string;
-	event: 'send' | 'delivered' | 'failed' | 'recevied';
-	status: sendEvent | deliveredEvent | failedEvent | receivedEvent;
+	phoneNumber: string; // contract phone
+	event: 'send' | 'delivered' | 'failed' | 'recevied' | 'pending' | 'queuing';
+	status: sendEvent | deliveredEvent | failedEvent | receivedEvent | null; // null for pending and queuing
 };
 
 type sendEvent = {

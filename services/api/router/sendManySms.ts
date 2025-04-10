@@ -48,7 +48,7 @@ async function sendManySms(req: Request<any>, res: Response<any>) {
 		await new Promise(async resolve => {
 			if (!contact) {
 				//error is an final status
-				res.write(`data: ${JSON.stringify({ phone: usr[1], status: 'errored' })}\n\n`, resolve);
+				res.write(`data: ${JSON.stringify({ phone: usr[1], status: 'failed' })}\n\n`, resolve);
 				return false;
 			}
 
@@ -62,7 +62,7 @@ async function sendManySms(req: Request<any>, res: Response<any>) {
 					await new Promise(async resolve => {
 						res.write(`data: ${JSON.stringify({ phone: usr[1], status })}\n\n`, resolve);
 					});
-					if (status == 'errored' || status == 'send') {
+					if (status == 'failed' || status == 'send') {
 						//if we have final status, request is end
 						resolve(true);
 					}
