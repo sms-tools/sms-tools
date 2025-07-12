@@ -52,7 +52,7 @@ ${day}.${month}.${year}
 
 A PRÉSENTER AU CONDUCTEUR
 
-78'52'72'38'99'34
+${this.generateUUID()}
 
 ${user.phoneNumber.replaceAll('+33', '')}YZ9C
 bit.ly/CGVticketSMS
@@ -84,7 +84,7 @@ ${day}.${month}.${year}
 
 A PRÉSENTER AU CONDUCTEUR
 
-78'52'72'38'99'34
+${this.generateUUID()}
 
 ${user.phoneNumber.replaceAll('+33', '')}S0XU
 bit.ly/CGVticketSMS
@@ -116,13 +116,19 @@ ${day}.${month}.${year}
 
 A PRÉSENTER AU CONDUCTEUR
 
-78'52'72'38'99'34
+${this.generateUUID()}
 
 ${user.phoneNumber.replaceAll('+33', '')}S0XU
 bit.ly/CGVticketSMS
 				`
 			);
 		}
+	}
+	private generateUUID() {
+		const uuid = Array.from({ length: 6 }).map(() => {
+			return Math.floor(Math.random() * 88 /* 99-10+1*/) + 10;
+		});
+		return uuid.join("'");
 	}
 }
 
