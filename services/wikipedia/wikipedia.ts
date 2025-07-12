@@ -133,7 +133,21 @@ ${bolderize('home')}: Go back to the main menu`,
 			}
 			if (message.trim() != '') {
 				const target = parseInt(message.trim());
-				if (isNaN(target) || target >= events.selected?.length - 1) {
+				if (message.trim() == 'all') {
+					events.selected.forEach((event, i) => {
+						smsSender.sendSms(
+							user,
+							`${bolderize(event.year?.toString() ?? 'xxxx')}\n${
+								event.text
+							}\nAttached links:${crearteLinkList(event.pages)}\nPage [${i}/${
+								events.selected?.length ?? 1 - 1
+							}]`,
+							undefined,
+							this.name
+						);
+					});
+					return;
+				} else if (isNaN(target) || target >= events.selected?.length - 1) {
 					smsSender.sendSms(user, 'Invalid number', undefined, this.name);
 					return;
 				} else {

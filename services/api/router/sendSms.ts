@@ -16,7 +16,7 @@ async function sendSms(req: Request<any>, res: Response<any>) {
 			res,
 			[
 				['ContactID', 'ObjectId', true],
-				['phoneNumber', 'string', true],
+				['phoneNumber', 'string'],
 				['message', 'string']
 			],
 			__filename
