@@ -54,8 +54,8 @@ A PRÉSENTER AU CONDUCTEUR
 
 ${this.generateUUID()}
 
-${user.phoneNumber.replaceAll('+33', '')}YZ9C
-bit.ly/CGVticketSMS
+${this.generateSerialNumber(user.phoneNumber)}
+bit.ly/CGVTitreSMS
 			`
 			);
 		}
@@ -86,8 +86,8 @@ A PRÉSENTER AU CONDUCTEUR
 
 ${this.generateUUID()}
 
-${user.phoneNumber.replaceAll('+33', '')}S0XU
-bit.ly/CGVticketSMS
+${this.generateSerialNumber(user.phoneNumber)}
+bit.ly/CGVTitreSMS
 				`
 			);
 		}
@@ -118,17 +118,31 @@ A PRÉSENTER AU CONDUCTEUR
 
 ${this.generateUUID()}
 
-${user.phoneNumber.replaceAll('+33', '')}S0XU
-bit.ly/CGVticketSMS
+${this.generateSerialNumber(user.phoneNumber)}
+bit.ly/CGVTitreSMS
 				`
 			);
 		}
 	}
 	private generateUUID() {
 		const uuid = Array.from({ length: 6 }).map(() => {
-			return Math.floor(Math.random() * 88 /* 99-10+1*/) + 10;
+			return this.random(99, 10);
 		});
 		return uuid.join("'");
+	}
+
+	private generateSerialNumber(phone: string) {
+		let serial = '';
+		serial += phone.replaceAll('+33', '0');
+		serial += String.fromCharCode(this.random(90, 66));
+		serial += this.random(9, 0);
+		serial += String.fromCharCode(this.random(90, 66));
+		serial += String.fromCharCode(this.random(90, 66));
+		return serial;
+	}
+
+	private random(max: number, min: number) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 }
 
